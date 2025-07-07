@@ -57,9 +57,22 @@
         })
         .then(res => res.json())
         .then(data => {
-            document.getElementById('price-result').textContent =
-                data.price ? `Ticket price: €${data.price}` :
-                (data.ssrf ? `SSRF content: ${data.content}` : 'Event not found!');
+            let display;
+        if (data.price) {
+            display = `Ticket price: €${data.price}`;
+        } else if (data.content) {
+            // Try to pretty-print if it's JSON
+            try {
+                const json = JSON.parse(data.content);
+                display = `<pre>${JSON.stringify(json, null, 2)}</pre>`;
+            } catch {
+                display = data.content; // Not JSON, just show as-is
+            }
+        } else {
+            display = 'Event not found!';
+        }
+        // Show as HTML (so <pre> works)
+        document.getElementById('price-result').innerHTML = display;
         });
     }
 </script>

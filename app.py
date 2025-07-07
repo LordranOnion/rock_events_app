@@ -69,15 +69,13 @@ def events():
 @app.route('/price', methods=['POST'])
 def get_price():
     event_id = request.json.get('event_id')
-    # SSRF for pentest lab: if input looks like a URL, fetch it
     if isinstance(event_id, str) and (event_id.startswith("http://") or event_id.startswith("https://")):
         try:
             resp = requests.get(event_id)
             return jsonify({
-                "ssrf": True,
                 "target": event_id,
                 "status": resp.status_code,
-                "content": resp.text[:200]
+                "content": resp.text
             })
         except Exception as e:
             return jsonify({"error": str(e)}), 500
@@ -100,6 +98,14 @@ def get_price():
 def admin_panel():
     return render_template('admin_panel.html')
 
+@app.route('/admin/users')
+def admin_users():
+    return jsonify(get_users())
+
+@app.route('/admin/events')
+def admin_events():
+    return jsonify(get_events())
+
 # ----- ADMIN JSON ENDPOINTS -----
 @app.route('/admin/users/add', methods=['POST'])
 def admin_add_user():
@@ -116,12 +122,12 @@ def admin_add_user():
     finally:
         conn.close()
 
-@app.route('/admin/users/remove', methods=['POST'])
-def admin_remove_user():
-    user_id = request.json.get('user_id')
+@app.route('/admin/users/delete')
+def admin_delete_user():
+    username = request.args.get('username')
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('DELETE FROM users WHERE id=? AND is_admin=0', (user_id,))
+    c.execute('DELETE FROM users WHERE username=? AND is_admin=0', (username,))
     conn.commit()
     conn.close()
     return jsonify({'status': 'ok'})
@@ -137,12 +143,12 @@ def admin_add_event():
     conn.close()
     return jsonify({'status': 'ok'})
 
-@app.route('/admin/events/remove', methods=['POST'])
-def admin_remove_event():
-    event_id = request.json.get('event_id')
+@app.route('/admin/events/delete')
+def admin_delete_event():
+    name = request.args.get('name')
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('DELETE FROM events WHERE id=?', (event_id,))
+    c.execute('DELETE FROM events WHERE name=?', (name,))
     conn.commit()
     conn.close()
     return jsonify({'status': 'ok'})
