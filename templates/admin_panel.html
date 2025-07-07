@@ -17,7 +17,6 @@
 <body>
 <div class="container">
     <h2>Admin Panel</h2>
-    <a href="/admin/logout" style="float:right; color:#ff5722;">Logout</a>
     <div class="section">
         <h3>Users</h3>
         <table id="users-table">
@@ -50,7 +49,7 @@
 </div>
 <script>
     function fetchUsers() {
-        fetch('/admin/api/users').then(r => r.json()).then(users => {
+        fetch('/admin/users').then(r => r.json()).then(users => {
             const tbody = document.querySelector('#users-table tbody');
             tbody.innerHTML = '';
             users.forEach(u => {
@@ -66,7 +65,7 @@
         const username = document.getElementById('add-username').value.trim();
         const is_admin = document.getElementById('add-type').value === "1";
         if(!username) return alert("Username required");
-        fetch('/admin/api/users/add', {
+        fetch('/admin/users/add', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username, is_admin})
@@ -77,7 +76,7 @@
         });
     }
     function removeUser(id) {
-        fetch('/admin/api/users/remove', {
+        fetch('/admin/users/remove', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({user_id: id})
@@ -85,7 +84,7 @@
     }
 
     function fetchEvents() {
-        fetch('/admin/api/events').then(r => r.json()).then(events => {
+        fetch('/admin/events').then(r => r.json()).then(events => {
             const tbody = document.querySelector('#events-table tbody');
             tbody.innerHTML = '';
             events.forEach(e => {
@@ -102,7 +101,7 @@
         const venue = document.getElementById('add-venue').value.trim();
         const price = parseFloat(document.getElementById('add-price').value);
         if(!name || !date || !venue || isNaN(price)) return alert("All fields required");
-        fetch('/admin/api/events/add', {
+        fetch('/admin/events/add', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({name, date, venue, price})
@@ -115,7 +114,7 @@
         });
     }
     function removeEvent(id) {
-        fetch('/admin/api/events/remove', {
+        fetch('/admin/events/remove', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({event_id: id})

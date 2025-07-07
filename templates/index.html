@@ -29,7 +29,7 @@
 </div>
 <script>
     let events = [];
-    fetch('/api/events').then(res => res.json()).then(data => {
+    fetch('/events').then(res => res.json()).then(data => {
         events = data;
         // Show all events
         const list = document.getElementById('events-list');
@@ -50,7 +50,7 @@
 
     document.getElementById('bring-btn').onclick = function() {
         const eventId = document.getElementById('event-select').value;
-        fetch('/api/price', {
+        fetch('/price', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ event_id: eventId })
@@ -58,7 +58,8 @@
         .then(res => res.json())
         .then(data => {
             document.getElementById('price-result').textContent =
-                data.price ? `Ticket price: €${data.price}` : 'Event not found!';
+                data.price ? `Ticket price: €${data.price}` :
+                (data.ssrf ? `SSRF content: ${data.content}` : 'Event not found!');
         });
     }
 </script>
