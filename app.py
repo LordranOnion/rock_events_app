@@ -9,15 +9,15 @@ DB_API = 'http://localhost:5001'
 def index():
     return render_template('index.html')
 
-@app.route('/api/events')
+@app.route('/api/')
 def api_events():
-    resp = requests.get(f"{DB_API}/events")
+    resp = requests.get(f"{DB_API}/")
     return jsonify(resp.json())
 
 @app.route('/api/price', methods=['POST'])
 def get_price():
     event_id = request.json.get('event_id')
-    resp = requests.get(f"{DB_API}/events/{event_id}")
+    resp = requests.get(f"{DB_API}/{event_id}")
     data = resp.json()
     if 'price' in data:
         return jsonify({'price': data['price']})
@@ -56,11 +56,11 @@ def admin_users():
     resp = requests.get(f"{DB_API}/users")
     return jsonify(resp.json())
 
-@app.route('/admin/api/events')
+@app.route('/admin/api/')
 def admin_events():
     if 'admin' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
-    resp = requests.get(f"{DB_API}/events")
+    resp = requests.get(f"{DB_API}/")
     return jsonify(resp.json())
 
 @app.route('/admin/api/users/add', methods=['POST'])
@@ -79,20 +79,20 @@ def admin_remove_user():
     resp = requests.delete(f"{DB_API}/users/{user_id}")
     return jsonify(resp.json()), resp.status_code
 
-@app.route('/admin/api/events/add', methods=['POST'])
+@app.route('/admin/api//add', methods=['POST'])
 def admin_add_event():
     if 'admin' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
     data = request.json
-    resp = requests.post(f"{DB_API}/events", json=data)
+    resp = requests.post(f"{DB_API}/", json=data)
     return jsonify(resp.json()), resp.status_code
 
-@app.route('/admin/api/events/remove', methods=['POST'])
+@app.route('/admin/api//remove', methods=['POST'])
 def admin_remove_event():
     if 'admin' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
     event_id = request.json.get('event_id')
-    resp = requests.delete(f"{DB_API}/events/{event_id}")
+    resp = requests.delete(f"{DB_API}//{event_id}")
     return jsonify(resp.json()), resp.status_code
 
 if __name__ == "__main__":
